@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  fluentd:
+    build:
+      context: ./fluentd
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    restart: always
+
+  grafana:
+    image: grafana/grafana:5.3.2
+    ports:
+      - "3000:3000"
+    environment:
+      - "GF_SERVER_ROOT_URL="
+      - "GF_SECURITY_ADMIN_PASSWORD="
+    volumes:
+      - "/data/grafana:/var/lib/grafana"
+    restart: always
+
+  influxdb:
+    image: influxdb:1.7
+    volumes:
+      - "/data/influxdb/influxdb:/var/lib/influxdb"
+      - "/data/influxdb/snapshot:/tmp/snapshot"
+    restart: always
+
+  mariadb:
+    image: mariadb:10.4
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - "/data/mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
